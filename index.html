@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo de l'Événement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #2c3e50; /* Couleur de fond sympa pour le gaming */
+            color: white;
+            margin-top: 50px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #c0392b;
+        }
+
+        /* La grille 4x4 */
+        #grille-bingo {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        /* Le style des cases */
+        .case {
+            aspect-ratio: 1; /* Garde la forme carrée */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #ecf0f1;
+            color: #333;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 5px;
+            user-select: none; /* Empêche la sélection du texte au double-clic */
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Le style quand la case est cliquée (cochée) */
+        .case.cochee {
+            background-color: #2ecc71; /* Vert de validation */
+            color: white;
+            border-color: #27ae60;
+            transform: scale(0.95); /* Petit effet de clic */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bingo - Événement en cours</h1>
+    <button onclick="genererGrille()">Générer une nouvelle grille</button>
+    
+    <div id="grille-bingo"></div>
+
+    <script>
+        // 1. Ta liste de placeholders. 
+        // Mets-en plus que 16 pour que l'aléatoire soit intéressant !
+        const placeholders = [
+            "Défi A", "Défi B", "Défi C", "Défi D",
+            "Défi E", "Défi F", "Défi G", "Défi H",
+            "Défi I", "Défi J", "Défi K", "Défi L",
+            "Défi M", "Défi N", "Défi O", "Défi P",
+            "Défi Q", "Défi R", "Défi S", "Défi T"
+        ];
+
+        // 2. Fonction pour mélanger un tableau (Algorithme de Fisher-Yates)
+        function melanger(tableau) {
+            for (let i = tableau.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tableau[i], tableau[j]] = [tableau[j], tableau[i]];
+            }
+            return tableau;
+        }
+
+        // 3. Fonction pour générer la grille
+        function genererGrille() {
+            const conteneur = document.getElementById("grille-bingo");
+            conteneur.innerHTML = ""; // On vide la grille au cas où on régénère
+
+            // On mélange la liste et on récupère seulement les 16 premiers éléments
+            const casesSelectionnees = melanger([...placeholders]).slice(0, 16);
+
+            // On crée chaque case en HTML
+            casesSelectionnees.forEach(texte => {
+                const caseDiv = document.createElement("div");
+                caseDiv.classList.add("case");
+                caseDiv.textContent = texte;
+
+                // On ajoute l'action du clic pour cocher/décocher
+                caseDiv.addEventListener("click", () => {
+                    caseDiv.classList.toggle("cochee");
+                });
+
+                conteneur.appendChild(caseDiv);
+            });
+        }
+
+        // 4. On génère la toute première grille au chargement de la page
+        genererGrille();
+    </script>
+</body>
+</html>
