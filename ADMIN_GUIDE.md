@@ -4,7 +4,7 @@ This is a quick reference for you and your friend to manage the Bingo event!
 
 ## 1. Access the Admin Panel
 - **Where:** Click the **big jewel at the top** of the main game screen.
-- **Password:** `Pj4Ever<3`
+- **Password:** Enter the secret password.
 
 ## 2. Monitor Players (Leaderboard Tab)
 - Watch all players' scores update in real-time.

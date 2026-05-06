@@ -17,7 +17,7 @@ As an admin, you have access to a secret dashboard to monitor players and manage
 ### Accessing the Dashboard
 - On the main game screen, look at the big jewel at the very top of the background image.
 - **Click on the top jewel** to open the hidden admin portal.
-- Enter the secret password: `Pj4Ever<3`
+- Enter the secret password.
 
 ### Features of the Dashboard
 
