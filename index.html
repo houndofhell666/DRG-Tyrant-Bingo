@@ -30,32 +30,6 @@
 
         h1 { display: none; }
 
-        button {
-            position: absolute;
-            top: 15.5%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background: linear-gradient(135deg, #007ea7, #003459);
-            color: #ffd700;
-            border: 2px solid #00a8e8;
-            border-radius: 5px;
-            font-weight: bold;
-            text-transform: uppercase;
-            box-shadow: 0 0 15px rgba(0, 168, 232, 0.5);
-            transition: all 0.3s ease;
-            text-shadow: 1px 1px 2px black;
-            z-index: 10;
-        }
-
-        button:hover {
-            background: linear-gradient(135deg, #00a8e8, #007ea7);
-            box-shadow: 0 0 25px rgba(0, 168, 232, 0.8);
-            transform: translate(-50%, -2px);
-        }
-
         #bingo-grid {
             position: absolute;
             top: 22.8%;
@@ -66,6 +40,8 @@
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(4, 1fr);
             gap: 2px;
+            transform: scale(0.75);
+            transform-origin: center;
         }
 
         .cell {
@@ -142,11 +118,24 @@
         }
 
         #win-popup button {
-            position: relative; /* override absolute from main button */
-            top: auto;
-            left: auto;
-            transform: none;
-            margin: 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #007ea7, #003459);
+            color: #ffd700;
+            border: 2px solid #00a8e8;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0, 168, 232, 0.5);
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        #win-popup button:hover {
+            background: linear-gradient(135deg, #00a8e8, #007ea7);
+            box-shadow: 0 0 25px rgba(0, 168, 232, 0.8);
+            transform: translateY(-2px);
         }
 
         @keyframes popupIn {
@@ -154,45 +143,11 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Theme Switcher Button */
-        #theme-switcher {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 15px;
-            font-size: 14px;
-            background: rgba(13, 27, 42, 0.8);
-            border: 1px solid #00a8e8;
-            color: #e0f2fe;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
 
-        #theme-switcher:hover {
-            background: rgba(0, 168, 232, 0.5);
-            box-shadow: 0 0 15px rgba(0, 168, 232, 0.8);
-        }
-
-        /* Alternate Theme Override */
-        body.theme-alt #game-container {
-            background-image: url('background_grid.png');
-        }
-
-        body.theme-alt .cell {
-            background: rgba(13, 27, 42, 0.5); /* More opaque */
-            border: 1px solid rgba(0, 168, 232, 0.3); /* Add border since image might have no grid */
-        }
     </style>
 </head>
 <body>
-    <!-- Theme Switcher -->
-    <button id="theme-switcher" onclick="toggleTheme()">Switch Background</button>
+
 
     <!-- Win Popup Overlay -->
     <div id="win-overlay">
@@ -204,7 +159,6 @@
 
     <div id="game-container">
         <h1>Bingo - Ongoing Event</h1>
-        <button onclick="generateGrid()">Generate a new grid</button>
         <div id="bingo-grid"></div>
     </div>
 
@@ -264,9 +218,7 @@
             generateGrid();
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('theme-alt');
-        }
+
 
         // 4. Generate the very first grid on page load
         generateGrid();
