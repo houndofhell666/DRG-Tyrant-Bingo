@@ -252,7 +252,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getDatabase, ref, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCV_UpfbqOAW7EoymmlOFuTqdgVZmrEtqo",
@@ -268,13 +268,31 @@
         const db = getDatabase(app);
 
         let playerPseudo = null;
+        let placeholders = [];
+        let currentGrid = [];
 
-        window.submitPseudo = () => {
+        const defaultChallenges = [
+            "electro asks for frostars", "hound use angry cat", "Challenge C", "Challenge D",
+            "Challenge E", "Challenge F", "Challenge G", "Challenge H",
+            "Challenge I", "Challenge J", "Challenge K", "Challenge L",
+            "Challenge M", "Challenge N", "Challenge O", "Challenge P"
+        ];
+
+        window.submitPseudo = async () => {
             const input = document.getElementById('pseudo-input').value.trim();
             if (input.length > 0) {
                 playerPseudo = input;
                 document.getElementById('pseudo-overlay').style.display = 'none';
-                updateScore(0);
+                
+                // Fetch challenges from DB before generating grid
+                const snapshot = await get(child(ref(db), 'config/challenges'));
+                if (snapshot.exists()) {
+                    placeholders = snapshot.val();
+                } else {
+                    placeholders = defaultChallenges;
+                    set(ref(db, 'config/challenges'), placeholders);
+                }
+                generateGrid();
             } else {
                 alert("Please enter a pseudo!");
             }
@@ -284,17 +302,10 @@
             if (!playerPseudo) return;
             set(ref(db, 'scores/' + playerPseudo), {
                 score: score,
+                grid: currentGrid,
                 timestamp: Date.now()
             });
         }
-
-        const placeholders = [
-            "electro asks for frostars", "hound use angry cat", "Challenge C", "Challenge D",
-            "Challenge E", "Challenge F", "Challenge G", "Challenge H",
-            "Challenge I", "Challenge J", "Challenge K", "Challenge L",
-            "Challenge M", "Challenge N", "Challenge O", "Challenge P",
-            "Challenge Q", "Challenge R", "Challenge S", "Challenge T"
-        ];
 
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -308,17 +319,23 @@
             const container = document.getElementById("bingo-grid");
             container.innerHTML = "";
             const selectedCells = shuffle([...placeholders]).slice(0, 16);
+            
+            // Build the grid state array
+            currentGrid = selectedCells.map(text => ({ text, checked: false }));
+            
+            updateScore(0); // Send initial zero score and grid layout
 
-            selectedCells.forEach(text => {
+            currentGrid.forEach((cellData, index) => {
                 const cellDiv = document.createElement("div");
                 cellDiv.classList.add("cell");
-                cellDiv.textContent = text;
+                cellDiv.textContent = cellData.text;
 
                 cellDiv.addEventListener("click", () => {
                     cellDiv.classList.toggle("checked");
+                    cellData.checked = cellDiv.classList.contains("checked");
                     
-                    const checkedCells = document.querySelectorAll('.cell.checked').length;
-                    updateScore(checkedCells); // Send score in real-time
+                    const checkedCells = currentGrid.filter(c => c.checked).length;
+                    updateScore(checkedCells); // Sends score AND currentGrid array
 
                     if (checkedCells === 16) {
                         setTimeout(() => {
@@ -333,10 +350,9 @@
         window.closePopupAndRegenerate = () => {
             document.getElementById('win-overlay').style.display = 'none';
             generateGrid();
-            updateScore(0); // Reset score on new grid
         };
 
-        generateGrid();
+        // Note: generateGrid is no longer called on load. It is called after submitting pseudo.
     </script>
 </body>
 </html>
