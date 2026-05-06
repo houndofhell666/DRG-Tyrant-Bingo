@@ -104,9 +104,66 @@
             box-shadow: inset 0 0 15px rgba(255,255,255,0.4);
             text-shadow: 0 0 5px rgba(0,0,0,0.8);
         }
+
+        /* Win Popup Styles */
+        #win-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        #win-popup {
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            border: 3px solid #00a8e8;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 40px #00a8e8, inset 0 0 20px rgba(0, 168, 232, 0.4);
+            animation: popupIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #win-popup h2 {
+            color: #ffd700;
+            font-size: 3em;
+            margin: 0 0 30px 0;
+            text-shadow: 0 0 20px #ffb703;
+            text-transform: uppercase;
+        }
+
+        #win-popup button {
+            position: relative; /* override absolute from main button */
+            top: auto;
+            left: auto;
+            transform: none;
+            margin: 0;
+        }
+
+        @keyframes popupIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
+    <!-- Win Popup Overlay -->
+    <div id="win-overlay">
+        <div id="win-popup">
+            <h2>You Won!</h2>
+            <button onclick="closePopupAndRegenerate()">Play Again</button>
+        </div>
+    </div>
+
     <div id="game-container">
         <h1>Bingo - Ongoing Event</h1>
         <button onclick="generateGrid()">Generate a new grid</button>
@@ -150,10 +207,23 @@
                 // Add the click action to check/uncheck
                 cellDiv.addEventListener("click", () => {
                     cellDiv.classList.toggle("checked");
+                    
+                    // Check for win condition (all 16 cells checked)
+                    const checkedCells = document.querySelectorAll('.cell.checked').length;
+                    if (checkedCells === 16) {
+                        setTimeout(() => {
+                            document.getElementById('win-overlay').style.display = 'flex';
+                        }, 400); // Small delay to let the animation finish
+                    }
                 });
 
                 container.appendChild(cellDiv);
             });
+        }
+
+        function closePopupAndRegenerate() {
+            document.getElementById('win-overlay').style.display = 'none';
+            generateGrid();
         }
 
         // 4. Generate the very first grid on page load
