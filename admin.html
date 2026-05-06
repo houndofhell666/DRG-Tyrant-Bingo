@@ -182,24 +182,31 @@
         </div>
     </div>
 
-    <h1>Bingo Leaderboard</h1>
+    <h1 id="admin-title" style="display: none;">Bingo Leaderboard</h1>
 
-    <div id="leaderboard-container">
+    <div id="leaderboard-container" style="display: none;">
         <div id="leaderboard-list">
             <div class="empty-msg">Waiting for players to join...</div>
         </div>
     </div>
 
-    <div class="actions">
+    <div class="actions" id="admin-actions" style="display: none;">
         <button id="btn-reset">Reset All Scores</button>
         <a href="index.html" class="btn">Return to Game</a>
     </div>
 
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
         window.checkPassword = () => {
             const input = document.getElementById('password-input').value;
             if (input === 'Pj4Ever<3') {
                 document.getElementById('password-overlay').style.display = 'none';
+                document.getElementById('admin-title').style.display = 'block';
+                document.getElementById('leaderboard-container').style.display = 'block';
+                document.getElementById('admin-actions').style.display = 'flex';
+                initFirebase();
             } else {
                 alert('Access Denied: Incorrect Password');
             }
@@ -210,73 +217,72 @@
             if (e.key === 'Enter') window.checkPassword();
         });
 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+        function initFirebase() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyCV_UpfbqOAW7EoymmlOFuTqdgVZmrEtqo",
+                authDomain: "drg-tyrant-bingo.firebaseapp.com",
+                databaseURL: "https://drg-tyrant-bingo-default-rtdb.firebaseio.com",
+                projectId: "drg-tyrant-bingo",
+                storageBucket: "drg-tyrant-bingo.firebasestorage.app",
+                messagingSenderId: "470680149909",
+                appId: "1:470680149909:web:737039bc8dc9c883cfe09c"
+            };
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCV_UpfbqOAW7EoymmlOFuTqdgVZmrEtqo",
-            authDomain: "drg-tyrant-bingo.firebaseapp.com",
-            databaseURL: "https://drg-tyrant-bingo-default-rtdb.firebaseio.com",
-            projectId: "drg-tyrant-bingo",
-            storageBucket: "drg-tyrant-bingo.firebasestorage.app",
-            messagingSenderId: "470680149909",
-            appId: "1:470680149909:web:737039bc8dc9c883cfe09c"
-        };
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+            const scoresRef = ref(db, 'scores');
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const scoresRef = ref(db, 'scores');
+            const listContainer = document.getElementById('leaderboard-list');
 
-        const listContainer = document.getElementById('leaderboard-list');
+            onValue(scoresRef, (snapshot) => {
+                const data = snapshot.val();
+                listContainer.innerHTML = '';
 
-        onValue(scoresRef, (snapshot) => {
-            const data = snapshot.val();
-            listContainer.innerHTML = '';
+                if (!data) {
+                    listContainer.innerHTML = '<div class="empty-msg">No active players.</div>';
+                    return;
+                }
 
-            if (!data) {
-                listContainer.innerHTML = '<div class="empty-msg">No active players.</div>';
-                return;
-            }
+                // Convert to array and sort by score descending
+                const players = [];
+                for (const [pseudo, info] of Object.entries(data)) {
+                    players.push({ pseudo, score: info.score, timestamp: info.timestamp });
+                }
 
-            // Convert to array and sort by score descending
-            const players = [];
-            for (const [pseudo, info] of Object.entries(data)) {
-                players.push({ pseudo, score: info.score, timestamp: info.timestamp });
-            }
+                players.sort((a, b) => b.score - a.score);
 
-            players.sort((a, b) => b.score - a.score);
+                players.forEach((player, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'player-row';
+                    
+                    const leftDiv = document.createElement('div');
+                    const rankSpan = document.createElement('span');
+                    rankSpan.className = 'rank';
+                    rankSpan.textContent = `#${index + 1}`;
+                    
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'player-name';
+                    nameSpan.textContent = player.pseudo;
 
-            players.forEach((player, index) => {
-                const row = document.createElement('div');
-                row.className = 'player-row';
-                
-                const leftDiv = document.createElement('div');
-                const rankSpan = document.createElement('span');
-                rankSpan.className = 'rank';
-                rankSpan.textContent = `#${index + 1}`;
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'player-name';
-                nameSpan.textContent = player.pseudo;
+                    leftDiv.appendChild(rankSpan);
+                    leftDiv.appendChild(nameSpan);
 
-                leftDiv.appendChild(rankSpan);
-                leftDiv.appendChild(nameSpan);
+                    const scoreSpan = document.createElement('span');
+                    scoreSpan.className = 'player-score';
+                    scoreSpan.textContent = `${player.score} / 16`;
 
-                const scoreSpan = document.createElement('span');
-                scoreSpan.className = 'player-score';
-                scoreSpan.textContent = `${player.score} / 16`;
-
-                row.appendChild(leftDiv);
-                row.appendChild(scoreSpan);
-                listContainer.appendChild(row);
+                    row.appendChild(leftDiv);
+                    row.appendChild(scoreSpan);
+                    listContainer.appendChild(row);
+                });
             });
-        });
 
-        document.getElementById('btn-reset').addEventListener('click', () => {
-            if (confirm("Are you sure you want to delete all scores? This cannot be undone.")) {
-                set(scoresRef, null);
-            }
-        });
+            document.getElementById('btn-reset').addEventListener('click', () => {
+                if (confirm("Are you sure you want to delete all scores? This cannot be undone.")) {
+                    set(scoresRef, null);
+                }
+            });
+        }
     </script>
 </body>
 </html>
