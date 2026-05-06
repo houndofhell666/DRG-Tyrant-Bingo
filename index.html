@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bingo de l'Événement</title>
+    <title>Event Bingo</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #2c3e50; /* Couleur de fond sympa pour le gaming */
+            background-color: #2c3e50; /* Nice background color for gaming */
             color: white;
             margin-top: 50px;
         }
@@ -31,8 +31,8 @@
             background-color: #c0392b;
         }
 
-        /* La grille 4x4 */
-        #grille-bingo {
+        /* The 4x4 grid */
+        #bingo-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
@@ -40,9 +40,9 @@
             max-width: 500px;
         }
 
-        /* Le style des cases */
-        .case {
-            aspect-ratio: 1; /* Garde la forme carrée */
+        /* Cell style */
+        .cell {
+            aspect-ratio: 1; /* Keeps the square shape */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -54,71 +54,71 @@
             cursor: pointer;
             font-weight: bold;
             padding: 5px;
-            user-select: none; /* Empêche la sélection du texte au double-clic */
+            user-select: none; /* Prevents text selection on double click */
             transition: all 0.2s ease-in-out;
         }
 
-        /* Le style quand la case est cliquée (cochée) */
-        .case.cochee {
-            background-color: #2ecc71; /* Vert de validation */
+        /* Style when the cell is clicked (checked) */
+        .cell.checked {
+            background-color: #2ecc71; /* Validation green */
             color: white;
             border-color: #27ae60;
-            transform: scale(0.95); /* Petit effet de clic */
+            transform: scale(0.95); /* Small click effect */
         }
     </style>
 </head>
 <body>
 
-    <h1>Bingo - Événement en cours</h1>
-    <button onclick="genererGrille()">Générer une nouvelle grille</button>
+    <h1>Bingo - Ongoing Event</h1>
+    <button onclick="generateGrid()">Generate a new grid</button>
     
-    <div id="grille-bingo"></div>
+    <div id="bingo-grid"></div>
 
     <script>
-        // 1. Ta liste de placeholders. 
-        // Mets-en plus que 16 pour que l'aléatoire soit intéressant !
+        // 1. Your list of placeholders. 
+        // Put more than 16 to make the randomness interesting!
         const placeholders = [
-            "Défi A", "Défi B", "Défi C", "Défi D",
-            "Défi E", "Défi F", "Défi G", "Défi H",
-            "Défi I", "Défi J", "Défi K", "Défi L",
-            "Défi M", "Défi N", "Défi O", "Défi P",
-            "Défi Q", "Défi R", "Défi S", "Défi T"
+            "Challenge A", "Challenge B", "Challenge C", "Challenge D",
+            "Challenge E", "Challenge F", "Challenge G", "Challenge H",
+            "Challenge I", "Challenge J", "Challenge K", "Challenge L",
+            "Challenge M", "Challenge N", "Challenge O", "Challenge P",
+            "Challenge Q", "Challenge R", "Challenge S", "Challenge T"
         ];
 
-        // 2. Fonction pour mélanger un tableau (Algorithme de Fisher-Yates)
-        function melanger(tableau) {
-            for (let i = tableau.length - 1; i > 0; i--) {
+        // 2. Function to shuffle an array (Fisher-Yates Algorithm)
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [tableau[i], tableau[j]] = [tableau[j], tableau[i]];
+                [array[i], array[j]] = [array[j], array[i]];
             }
-            return tableau;
+            return array;
         }
 
-        // 3. Fonction pour générer la grille
-        function genererGrille() {
-            const conteneur = document.getElementById("grille-bingo");
-            conteneur.innerHTML = ""; // On vide la grille au cas où on régénère
+        // 3. Function to generate the grid
+        function generateGrid() {
+            const container = document.getElementById("bingo-grid");
+            container.innerHTML = ""; // Empty the grid in case we regenerate
 
-            // On mélange la liste et on récupère seulement les 16 premiers éléments
-            const casesSelectionnees = melanger([...placeholders]).slice(0, 16);
+            // Shuffle the list and only get the first 16 elements
+            const selectedCells = shuffle([...placeholders]).slice(0, 16);
 
-            // On crée chaque case en HTML
-            casesSelectionnees.forEach(texte => {
-                const caseDiv = document.createElement("div");
-                caseDiv.classList.add("case");
-                caseDiv.textContent = texte;
+            // Create each cell in HTML
+            selectedCells.forEach(text => {
+                const cellDiv = document.createElement("div");
+                cellDiv.classList.add("cell");
+                cellDiv.textContent = text;
 
-                // On ajoute l'action du clic pour cocher/décocher
-                caseDiv.addEventListener("click", () => {
-                    caseDiv.classList.toggle("cochee");
+                // Add the click action to check/uncheck
+                cellDiv.addEventListener("click", () => {
+                    cellDiv.classList.toggle("checked");
                 });
 
-                conteneur.appendChild(caseDiv);
+                container.appendChild(cellDiv);
             });
         }
 
-        // 4. On génère la toute première grille au chargement de la page
-        genererGrille();
+        // 4. Generate the very first grid on page load
+        generateGrid();
     </script>
 </body>
 </html>
