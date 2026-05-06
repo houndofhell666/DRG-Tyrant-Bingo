@@ -81,6 +81,72 @@
             text-shadow: 0 0 5px rgba(0,0,0,0.8);
         }
 
+        /* Pseudo Modal */
+        #pseudo-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        #pseudo-popup {
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            border: 3px solid #00a8e8;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 40px #00a8e8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: popupIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #pseudo-popup h2 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 15px #ffb703;
+            text-transform: uppercase;
+        }
+
+        #pseudo-input {
+            padding: 15px;
+            font-size: 20px;
+            border-radius: 5px;
+            border: 2px solid #00a8e8;
+            background: #001219;
+            color: white;
+            outline: none;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #pseudo-popup button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #007ea7, #003459);
+            color: #ffd700;
+            border: 2px solid #00a8e8;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0, 168, 232, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        #pseudo-popup button:hover {
+            background: linear-gradient(135deg, #00a8e8, #007ea7);
+            box-shadow: 0 0 25px rgba(0, 168, 232, 0.8);
+            transform: translateY(-2px);
+        }
+
         /* Win Popup Styles */
         #win-overlay {
             display: none;
@@ -161,6 +227,15 @@
 <body>
 
 
+    <!-- Pseudo Overlay -->
+    <div id="pseudo-overlay">
+        <div id="pseudo-popup">
+            <h2>Enter Pseudo</h2>
+            <input type="text" id="pseudo-input" placeholder="Pseudo..." maxlength="15">
+            <button onclick="submitPseudo()">Start Playing</button>
+        </div>
+    </div>
+
     <!-- Win Popup Overlay -->
     <div id="win-overlay">
         <div id="win-popup">
@@ -175,9 +250,44 @@
         <div id="bingo-grid"></div>
     </div>
 
-    <script>
-        // 1. Your list of placeholders. 
-        // Put more than 16 to make the randomness interesting!
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getDatabase, ref, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCV_UpfbqOAW7EoymmlOFuTqdgVZmrEtqo",
+            authDomain: "drg-tyrant-bingo.firebaseapp.com",
+            databaseURL: "https://drg-tyrant-bingo-default-rtdb.firebaseio.com",
+            projectId: "drg-tyrant-bingo",
+            storageBucket: "drg-tyrant-bingo.firebasestorage.app",
+            messagingSenderId: "470680149909",
+            appId: "1:470680149909:web:737039bc8dc9c883cfe09c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let playerPseudo = null;
+
+        window.submitPseudo = () => {
+            const input = document.getElementById('pseudo-input').value.trim();
+            if (input.length > 0) {
+                playerPseudo = input;
+                document.getElementById('pseudo-overlay').style.display = 'none';
+                updateScore(0);
+            } else {
+                alert("Please enter a pseudo!");
+            }
+        };
+
+        function updateScore(score) {
+            if (!playerPseudo) return;
+            set(ref(db, 'scores/' + playerPseudo), {
+                score: score,
+                timestamp: Date.now()
+            });
+        }
+
         const placeholders = [
             "electro asks for frostars", "hound use angry cat", "Challenge C", "Challenge D",
             "Challenge E", "Challenge F", "Challenge G", "Challenge H",
@@ -186,7 +296,6 @@
             "Challenge Q", "Challenge R", "Challenge S", "Challenge T"
         ];
 
-        // 2. Function to shuffle an array (Fisher-Yates Algorithm)
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -195,45 +304,38 @@
             return array;
         }
 
-        // 3. Function to generate the grid
         function generateGrid() {
             const container = document.getElementById("bingo-grid");
-            container.innerHTML = ""; // Empty the grid in case we regenerate
-
-            // Shuffle the list and only get the first 16 elements
+            container.innerHTML = "";
             const selectedCells = shuffle([...placeholders]).slice(0, 16);
 
-            // Create each cell in HTML
             selectedCells.forEach(text => {
                 const cellDiv = document.createElement("div");
                 cellDiv.classList.add("cell");
                 cellDiv.textContent = text;
 
-                // Add the click action to check/uncheck
                 cellDiv.addEventListener("click", () => {
                     cellDiv.classList.toggle("checked");
                     
-                    // Check for win condition (all 16 cells checked)
                     const checkedCells = document.querySelectorAll('.cell.checked').length;
+                    updateScore(checkedCells); // Send score in real-time
+
                     if (checkedCells === 16) {
                         setTimeout(() => {
                             document.getElementById('win-overlay').style.display = 'flex';
-                        }, 400); // Small delay to let the animation finish
+                        }, 400);
                     }
                 });
-
                 container.appendChild(cellDiv);
             });
         }
 
-        function closePopupAndRegenerate() {
+        window.closePopupAndRegenerate = () => {
             document.getElementById('win-overlay').style.display = 'none';
             generateGrid();
-        }
+            updateScore(0); // Reset score on new grid
+        };
 
-
-
-        // 4. Generate the very first grid on page load
         generateGrid();
     </script>
 </body>
