@@ -153,9 +153,51 @@
             0% { transform: scale(0.5); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        /* Theme Switcher Button */
+        #theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            font-size: 14px;
+            background: rgba(13, 27, 42, 0.8);
+            border: 1px solid #00a8e8;
+            color: #e0f2fe;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #theme-switcher:hover {
+            background: rgba(0, 168, 232, 0.5);
+            box-shadow: 0 0 15px rgba(0, 168, 232, 0.8);
+        }
+
+        /* Dragon Theme Override */
+        body.theme-dragon #game-container {
+            background-image: url('background.webp');
+        }
+
+        body.theme-dragon h1 {
+            display: block;
+        }
+
+        body.theme-dragon .cell {
+            background: rgba(13, 27, 42, 0.5); /* More opaque */
+            border: 1px solid rgba(0, 168, 232, 0.3); /* Add border since image has no grid */
+        }
     </style>
 </head>
 <body>
+    <!-- Theme Switcher -->
+    <button id="theme-switcher" onclick="toggleTheme()">Switch Background</button>
+
     <!-- Win Popup Overlay -->
     <div id="win-overlay">
         <div id="win-popup">
@@ -224,6 +266,10 @@
         function closePopupAndRegenerate() {
             document.getElementById('win-overlay').style.display = 'none';
             generateGrid();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('theme-dragon');
         }
 
         // 4. Generate the very first grid on page load
