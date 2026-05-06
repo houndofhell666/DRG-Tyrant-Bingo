@@ -143,7 +143,19 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-
+        #secret-admin-btn {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 5%;
+            height: 8%;
+            background: transparent;
+            border: none;
+            cursor: default;
+            z-index: 100;
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -159,6 +171,7 @@
 
     <div id="game-container">
         <h1>Bingo - Ongoing Event</h1>
+        <button id="secret-admin-btn" onclick="window.location.href='admin.html'" title=""></button>
         <div id="bingo-grid"></div>
     </div>
 
