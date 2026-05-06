@@ -6,38 +6,56 @@
     <title>Event Bingo</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #2c3e50; /* Nice background color for gaming */
-            color: white;
-            margin-top: 50px;
+            background-color: #0d1b2a;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center top;
+            background-attachment: fixed;
+            color: #e0f2fe;
+            margin: 0;
+            padding-top: 180px; /* Space for the title in the image */
+            min-height: 100vh;
+        }
+
+        h1 {
+            display: none; /* Title is already part of the background image */
         }
 
         button {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 12px 24px;
+            font-size: 18px;
             cursor: pointer;
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, #007ea7, #003459);
+            color: #ffd700; /* Gold text to match title */
+            border: 2px solid #00a8e8;
+            border-radius: 8px;
+            margin-bottom: 30px;
             font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0, 168, 232, 0.5);
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px black;
         }
 
         button:hover {
-            background-color: #c0392b;
+            background: linear-gradient(135deg, #00a8e8, #007ea7);
+            box-shadow: 0 0 25px rgba(0, 168, 232, 0.8);
+            transform: translateY(-2px);
         }
 
         /* The 4x4 grid */
         #bingo-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 10px; /* Reduced gap to align better with the image's internal grid */
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
+            background: transparent; /* Let the background frame show through */
+            padding: 10px;
         }
 
         /* Cell style */
@@ -47,23 +65,34 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            background-color: #ecf0f1;
-            color: #333;
-            border: 2px solid #bdc3c7;
-            border-radius: 8px;
+            background: rgba(13, 27, 42, 0.6); /* Translucent dark blue */
+            color: #e0f2fe; /* Light icy blue text */
+            border: 1px solid rgba(0, 168, 232, 0.3); /* Subtle icy border */
+            border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            padding: 5px;
-            user-select: none; /* Prevents text selection on double click */
+            font-size: 0.95em;
+            padding: 8px;
+            user-select: none;
             transition: all 0.2s ease-in-out;
+            backdrop-filter: blur(2px);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .cell:hover {
+            background: rgba(0, 126, 167, 0.5);
+            border-color: rgba(0, 168, 232, 0.8);
+            box-shadow: 0 0 10px rgba(0, 168, 232, 0.4);
         }
 
         /* Style when the cell is clicked (checked) */
         .cell.checked {
-            background-color: #2ecc71; /* Validation green */
-            color: white;
-            border-color: #27ae60;
-            transform: scale(0.95); /* Small click effect */
+            background: rgba(0, 168, 232, 0.7); /* Bright icy blue */
+            color: #ffffff;
+            border-color: #ffffff;
+            transform: scale(0.95);
+            box-shadow: 0 0 20px #00a8e8, inset 0 0 15px rgba(255,255,255,0.4);
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
         }
     </style>
 </head>
