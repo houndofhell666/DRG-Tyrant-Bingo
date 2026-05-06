@@ -179,18 +179,14 @@
             box-shadow: 0 0 15px rgba(0, 168, 232, 0.8);
         }
 
-        /* Dragon Theme Override */
-        body.theme-dragon #game-container {
-            background-image: url('background.webp');
+        /* Alternate Theme Override */
+        body.theme-alt #game-container {
+            background-image: url('background_grid.png');
         }
 
-        body.theme-dragon h1 {
-            display: block;
-        }
-
-        body.theme-dragon .cell {
+        body.theme-alt .cell {
             background: rgba(13, 27, 42, 0.5); /* More opaque */
-            border: 1px solid rgba(0, 168, 232, 0.3); /* Add border since image has no grid */
+            border: 1px solid rgba(0, 168, 232, 0.3); /* Add border since image might have no grid */
         }
     </style>
 </head>
@@ -269,7 +265,7 @@
         }
 
         function toggleTheme() {
-            document.body.classList.toggle('theme-dragon');
+            document.body.classList.toggle('theme-alt');
         }
 
         // 4. Generate the very first grid on page load
