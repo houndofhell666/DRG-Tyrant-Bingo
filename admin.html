@@ -116,9 +116,72 @@
             color: #8bb1c6;
             font-style: italic;
         }
+
+        /* Password Overlay */
+        #password-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        #password-box {
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            border: 3px solid #ca6702;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(202, 103, 2, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #password-box h2 {
+            color: #ffb703;
+            margin-top: 0;
+            text-transform: uppercase;
+        }
+
+        #password-input {
+            padding: 15px;
+            font-size: 20px;
+            border-radius: 5px;
+            border: 2px solid #ca6702;
+            background: #001219;
+            color: white;
+            outline: none;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        #password-box button {
+            border-color: #ca6702;
+            color: #ffb703;
+            background: linear-gradient(135deg, #9b2226, #660708);
+            box-shadow: 0 0 15px rgba(202, 103, 2, 0.5);
+        }
+
+        #password-box button:hover {
+            background: linear-gradient(135deg, #ae2012, #9b2226);
+            box-shadow: 0 0 25px rgba(202, 103, 2, 0.8);
+        }
     </style>
 </head>
 <body>
+    <!-- Password Overlay -->
+    <div id="password-overlay">
+        <div id="password-box">
+            <h2>Admin Access</h2>
+            <input type="password" id="password-input" placeholder="Password...">
+            <button onclick="checkPassword()">Login</button>
+        </div>
+    </div>
+
     <h1>Bingo Leaderboard</h1>
 
     <div id="leaderboard-container">
@@ -133,6 +196,20 @@
     </div>
 
     <script type="module">
+        window.checkPassword = () => {
+            const input = document.getElementById('password-input').value;
+            if (input === 'Pj4Ever<3') {
+                document.getElementById('password-overlay').style.display = 'none';
+            } else {
+                alert('Access Denied: Incorrect Password');
+            }
+        };
+
+        // Allow pressing Enter to submit
+        document.getElementById('password-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') window.checkPassword();
+        });
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
 
